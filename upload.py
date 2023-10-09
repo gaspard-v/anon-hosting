@@ -2,6 +2,7 @@ from flask import request, render_template, abort
 import os
 from Exceptions import NoFilesUploaded
 from typing import IO
+from encryption import generate_jwt_payload
 
 
 def __handle_stream(uploaded_stream: IO[bytes]):
@@ -17,6 +18,7 @@ def _post_file() -> bool:
     uploaded_file = request.files.get("file")
     if not uploaded_file:
         raise NoFilesUploaded("file")
+    generate_jwt_payload(uploaded_file.filename)
     # TODO add a file stream handler
     with uploaded_file.stream as upload_stream:
         __handle_stream(upload_stream)
