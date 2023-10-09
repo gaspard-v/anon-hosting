@@ -1,7 +1,6 @@
 from flask import request, render_template, abort
 import os
 from Exceptions import NoFilesUploaded
-from typing import IO
 from encryption import UploadedFileEncryption
 
 

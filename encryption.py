@@ -5,6 +5,8 @@ import string
 import os
 import base64
 from utils import get_encrypted_filepath
+from typing import IO
+from io import BufferedWriter
 
 
 class UploadedFileDataStructure:
@@ -25,9 +27,52 @@ class UploadedFileDataStructure:
         }
 
 
+class EncryptionOperation:
+    def __init__(self, key: bytes = None, **kwargs) -> None:
+        self._kwargs = kwargs
+        if not key:
+            key = EncryptionOperation.generate_key()
+        self._key = key
+        if not kwargs.get("tweak"):
+            self._kwargs.tweak = EncryptionOperation.generate_tweak()
+        self._cipher = Cipher(
+            algorithm=algorithms.AES(self._key), mode=modes.XTS(self._kwargs.tweak)
+        )
+        self._encryptor = self._cipher.encryptor()
+
+    def get_key(self) -> bytes:
+        return self._key
+
+    def get_other(self, key: str):
+        return self._kwargs.get(key)
+
+    def stream_to_stream_encryption(
+        self,
+        source_stream: IO[bytes],
+        dest_stream: BufferedWriter,
+        chunk_size: int = 1024 * 1024,
+    ) -> int:
+        total_write = 0
+        while True:
+            chunk = source_stream.read(chunk_size)
+            if not chunk:
+                break
+            total_write += dest_stream.write(self._encryptor.update(chunk))
+        total_write += dest_stream.write(self._encryptor.finalize())
+        return total_write
+
+    @staticmethod
+    def generate_key():
+        return os.urandom(32)
+
+    @staticmethod
+    def generate_tweak():
+        return os.urandom(16)
+
+
 class UploadedFileEncryption:
     def __init__(self, file: FileStorage) -> None:
-        self._key = os.urandom(64)
+        self._key = os.urandom(32)
         self._tweak = os.urandom(16)
         self._file = file
         self._orignal_filename = self._file.filename
