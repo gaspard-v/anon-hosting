@@ -6,7 +6,7 @@ import os
 import base64
 from utils import get_encrypted_filepath
 from typing import IO
-from io import BufferedWriter
+from io import BufferedWriter, BufferedReader
 
 
 class UploadedFileDataStructure:
@@ -28,17 +28,20 @@ class UploadedFileDataStructure:
 
 
 class EncryptionOperation:
+    _DEFAULT_CHUNK_SIZE = 1204 * 1024
+
     def __init__(self, key: bytes = None, **kwargs) -> None:
         self._kwargs = kwargs
         if not key:
             key = EncryptionOperation.generate_key()
         self._key = key
         if not kwargs.get("tweak"):
-            self._kwargs.tweak = EncryptionOperation.generate_tweak()
+            self._kwargs["tweak"] = EncryptionOperation.generate_tweak()
         self._cipher = Cipher(
-            algorithm=algorithms.AES(self._key), mode=modes.XTS(self._kwargs.tweak)
+            algorithm=algorithms.AES(self._key), mode=modes.XTS(self._kwargs["tweak"])
         )
         self._encryptor = self._cipher.encryptor()
+        self._decryptor = self._cipher.decryptor()
 
     def get_key(self) -> bytes:
         return self._key
@@ -50,7 +53,7 @@ class EncryptionOperation:
         self,
         source_stream: IO[bytes],
         dest_stream: BufferedWriter,
-        chunk_size: int = 1024 * 1024,
+        chunk_size: int = _DEFAULT_CHUNK_SIZE,
     ) -> int:
         total_write = 0
         while True:
@@ -60,6 +63,16 @@ class EncryptionOperation:
             total_write += dest_stream.write(self._encryptor.update(chunk))
         total_write += dest_stream.write(self._encryptor.finalize())
         return total_write
+
+    def stream_to_stream_decryptor(
+        self, source_stream: BufferedReader, chunk_size: int = _DEFAULT_CHUNK_SIZE
+    ):
+        while True:
+            chunk = source_stream.read(chunk_size)
+            if not chunk:
+                break
+            yield self._decryptor.update(chunk)
+        yield self._decryptor.finalize()
 
     @staticmethod
     def generate_key():
@@ -72,15 +85,10 @@ class EncryptionOperation:
 
 class UploadedFileEncryption:
     def __init__(self, file: FileStorage) -> None:
-        self._key = os.urandom(32)
-        self._tweak = os.urandom(16)
         self._file = file
         self._orignal_filename = self._file.filename
         self._stored_filename = self._generate_random_filename()
-        self._cipher = Cipher(
-            algorithm=algorithms.AES(self._key), mode=modes.XTS(self._tweak)
-        )
-        self._encryptor = self._cipher.encryptor()
+        self._encryptor = EncryptionOperation()
 
     def _generate_random_filename(self) -> str:
         char_dict = string.ascii_letters + string.digits
@@ -90,22 +98,26 @@ class UploadedFileEncryption:
         )
         return random_filename
 
-    def encrypt_and_write_file(self):
-        chunk_size = 1024 * 1024
+    def encrypt_and_write_file(self) -> int:
         encrypted_filepath = get_encrypted_filepath(self._stored_filename)
         with open(
             encrypted_filepath, "wb"
         ) as encrypted_file, self._file.stream as stream:
-            while True:
-                chunk = stream.read(chunk_size)
-                if not chunk:
-                    break
-                encrypted_file.write(self._encryptor.update(chunk))
-            encrypted_file.write(self._encryptor.finalize())
+            return self._encryptor.stream_to_stream_encryption(stream, encrypted_file)
+        # TODO : implement
+        # functionnal file decryption
+        # with open(encrypted_filepath, "rb") as encrypted_file, open(
+        #     "lol.png", "wb"
+        # ) as lol:
+        #     for decrypted_chunk in self._encryptor.stream_to_stream_decryptor(
+        #         encrypted_file
+        #     ):
+        #         lol.write(decrypted_chunk)
+        # return 1
 
     def generate_json(self) -> UploadedFileDataStructure:
-        key = base64.b64encode(self._key).decode()
-        tweak = base64.b64encode(self._tweak).decode()
+        key = base64.b64encode(self._encryptor.get_key()).decode()
+        tweak = base64.b64encode(self._encryptor.get_other("tweak")).decode()
         return UploadedFileDataStructure(
             key, tweak, self._orignal_filename, self._stored_filename
         )
