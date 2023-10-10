@@ -1,5 +1,1 @@
-GENERATE
-20 char password
-STORE
-encrypted file name
-original file name
+Create cool CSS
