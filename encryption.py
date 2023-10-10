@@ -5,8 +5,11 @@ import string
 import os
 import base64
 from utils import get_encrypted_filepath
-from typing import IO
+from typing import IO, Any
 from io import BufferedWriter, BufferedReader
+import jwt
+from Exceptions import EnvVariableNotDefined
+import time
 
 
 class UploadedFileDataStructure:
@@ -25,6 +28,53 @@ class UploadedFileDataStructure:
             "original_filename": self.original_filename,
             "stored_filename": self.stored_filename,
         }
+
+
+class JWTOperation:
+    def __init__(self, data: dict[str, Any] | str | bytes):
+        if not os.environ.get("SECRET_KEY"):
+            raise EnvVariableNotDefined("SECRET_KEY")
+        self._key = os.environ["SECRET_KEY"]
+        self._algorithm = "HS256"
+        self._options = {
+            "verify_signature": True,
+            "require": ["iat", "nbf"],
+            "verify_nbf": "verify_signature",
+        }
+        epoch_time = int(time.time())
+        if isinstance(data, dict):
+            claims = {"iat": epoch_time, "nbf": epoch_time}
+            self._data = data.update(claims)
+        self._data = data
+
+    def generate_jwt(self) -> str:
+        if not isinstance(self._data, dict):
+            raise ValueError("Data must be a dict")
+        return jwt.encode(self._data, algorithms=self._algorithm)
+
+    def generate_encrypted_jwt(self) -> str:
+        if not isinstance(self._data, dict):
+            raise ValueError("Data must be a dict")
+        return jwt.encode(self._data, key=self._key, algorithm=self._algorithm)
+
+    def decode_jwt(self) -> str:
+        if not isinstance(self._data, (str, bytes)):
+            raise ValueError("Data must be an str or bytes")
+        return jwt.decode(
+            self._data,
+            algorithms=self._algorithm,
+            options=self._options,
+        )
+
+    def decode_encrypted_jwt(self) -> str:
+        if not isinstance(self._data, (str, bytes)):
+            raise ValueError("Data must be an str or bytes")
+        return jwt.decode(
+            self._data,
+            key=self._key,
+            algorithms=self._algorithm,
+            options=self._options,
+        )
 
 
 class EncryptionOperation:
