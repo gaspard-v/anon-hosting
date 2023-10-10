@@ -8,6 +8,8 @@ from utils import get_encrypted_filepath
 from typing import IO, Any
 from io import BufferedWriter, BufferedReader
 import jwt
+from jwcrypto import jwk, jwe
+from jwcrypto.common import json_encode
 from Exceptions import EnvVariableNotDefined
 import time
 
@@ -30,7 +32,23 @@ class UploadedFileDataStructure:
         }
 
 
-class JWTOperation:
+class JWEOperation:
+    def __init__(self):
+        private_folder = os.environ["PRIVATE_FOLDER"]
+        jwe_key_file = "jwe_key.json"
+        jwe_key_path = os.path.join(private_folder, jwe_key_file)
+        if not os.path.exists(private_folder):
+            os.mkdir(private_folder)
+        if not os.path.exists(jwe_key_path):
+            key = jwk.JWK.generate(kty="oct", size=256, kid=os.environ["WEBSITE_NAME"])
+            with open(jwe_key_path, "w") as jwe_key_stream:
+                jwe_key_stream.write(key.export())
+        else:
+            with open(jwe_key_path, "r") as jwe_key_stream:
+                key = jwk.JWK.from_json(jwe_key_stream.read())
+
+
+class JWSOperation:
     def __init__(self, data: dict[str, Any] | str | bytes):
         if not os.environ.get("SECRET_KEY"):
             raise EnvVariableNotDefined("SECRET_KEY")
@@ -50,11 +68,6 @@ class JWTOperation:
     def generate_jwt(self) -> str:
         if not isinstance(self._data, dict):
             raise ValueError("Data must be a dict")
-        return jwt.encode(self._data, algorithms=self._algorithm)
-
-    def generate_encrypted_jwt(self) -> str:
-        if not isinstance(self._data, dict):
-            raise ValueError("Data must be a dict")
         return jwt.encode(self._data, key=self._key, algorithm=self._algorithm)
 
     def decode_jwt(self) -> str:
@@ -62,17 +75,8 @@ class JWTOperation:
             raise ValueError("Data must be an str or bytes")
         return jwt.decode(
             self._data,
-            algorithms=self._algorithm,
-            options=self._options,
-        )
-
-    def decode_encrypted_jwt(self) -> str:
-        if not isinstance(self._data, (str, bytes)):
-            raise ValueError("Data must be an str or bytes")
-        return jwt.decode(
-            self._data,
             key=self._key,
-            algorithms=self._algorithm,
+            algorithm=self._algorithm,
             options=self._options,
         )
 
