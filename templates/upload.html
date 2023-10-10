@@ -1,18 +1,12 @@
-<!DOCTYPE html>
-<html>
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{WEBSITE_NAME}} - Upload</title>
-</head>
-
-<body>
-    <h1>{{WEBSITE_NAME}} - Upload</h1>
-    <form method="post" , enctype="multipart/form-data">
-        <input type="file" name="file">
-        <input type="submit" value="upload">
-    </form>
-</body>
-
-</html>
+{% extends "base.html" %}
+{% block title %}{{WEBSITE_NAME}} - Upload{% endblock %}
+{% block content_title %}{{WEBSITE_NAME}} - Upload{% endblock %}
+{% block content %}
+<form method="post" , enctype="multipart/form-data">
+    <input type="file" name="file">
+    <input type="submit" value="upload">
+    {% if file_metadata %}
+    <pre>{{ file_metadata }}</pre>
+    {% endif %}
+</form>
+{% endblock %}

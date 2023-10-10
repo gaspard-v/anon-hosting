@@ -1,18 +1,9 @@
-<!DOCTYPE html>
-<html>
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{WEBSITE_NAME}}</title>
-</head>
-
-<body>
-    <h1>{{WEBSITE_NAME}}</h1>
-    <ul>
-        <li><a href="/upload">Upload a file</a></li>
-        <li><a href="/download">Download a file</a></li>
-    </ul>
-</body>
-
-</html>
+{% extends "base.html" %}
+{% block title %}{{WEBSITE_NAME}}{% endblock %}
+{% block content_title %}{{WEBSITE_NAME}}{% endblock %}
+{% block content %}
+<ul>
+    <li><a href="/upload">Upload a file</a></li>
+    <li><a href="/download">Download a file</a></li>
+</ul>
+{% endblock %}

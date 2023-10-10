@@ -28,7 +28,7 @@ class UploadedFileDataStructure:
 
 
 class EncryptionOperation:
-    _DEFAULT_CHUNK_SIZE = 1204 * 1024
+    _DEFAULT_CHUNK_SIZE = 1204 * 1024 * 4  # 4 MB
 
     def __init__(self, key: bytes = None, **kwargs) -> None:
         self._kwargs = kwargs

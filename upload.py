@@ -4,20 +4,20 @@ from Exceptions import NoFilesUploaded
 from encryption import UploadedFileEncryption
 
 
-def _post_file() -> bool:
+def _post_file() -> dict[str, str]:
     uploaded_file = request.files.get("file")
     if not uploaded_file:
         raise NoFilesUploaded("file")
     uploaded_file_encryption = UploadedFileEncryption(uploaded_file)
     uploaded_file_encryption.encrypt_and_write_file()
-    print(uploaded_file_encryption.generate_json().to_dict())
-    return True
+    return uploaded_file_encryption.generate_json().to_dict()
 
 
 def handle():
+    others = {}
     if request.method == "POST":
         try:
-            _post_file()
+            others["file_metadata"] = _post_file()
         except NoFilesUploaded:
             abort(400)
-    return render_template("upload.html", **os.environ)
+    return render_template("upload.html", **os.environ, **others)
