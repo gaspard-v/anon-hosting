@@ -11,9 +11,8 @@ def _post_file() -> dict[str, str]:
     uploaded_file_encryption = UploadedFileEncryption(uploaded_file)
     uploaded_file_encryption.encrypt_and_write_file()
     jwt_dict = uploaded_file_encryption.generate_json().to_dict()
-    jws = JWSOperation(jwt_dict)
-    JWEOperation()
-    return jws.generate_jwt()
+    jwe = JWEOperation(jwt_dict)
+    return jwe.generate_jwt()
 
 
 def handle():
