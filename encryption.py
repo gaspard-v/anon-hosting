@@ -17,12 +17,18 @@ import json
 
 class UploadedFileDataStructure:
     def __init__(
-        self, key: str, tweak: str, original_filename: str, stored_filename: str
+        self,
+        key: str,
+        tweak: str,
+        original_filename: str,
+        stored_filename: str,
+        content_type: str,
     ) -> None:
         self.key = key
         self.tweak = tweak
         self.original_filename = original_filename
         self.stored_filename = stored_filename
+        self.content_type = content_type
 
     def to_dict(self) -> dict[str, str]:
         return {
@@ -30,6 +36,7 @@ class UploadedFileDataStructure:
             "tweak": self.tweak,
             "original_filename": self.original_filename,
             "stored_filename": self.stored_filename,
+            "content_type": self.content_type,
         }
 
 
@@ -173,6 +180,7 @@ class UploadedFileEncryption:
         self._file = file
         self._orignal_filename = self._file.filename
         self._stored_filename = self._generate_random_filename()
+        self._content_type = self._file.content_type
         self._encryptor = EncryptionOperation()
 
     def _generate_random_filename(self) -> str:
@@ -194,5 +202,9 @@ class UploadedFileEncryption:
         key = base64.b64encode(self._encryptor.get_key()).decode()
         tweak = base64.b64encode(self._encryptor.get_other("tweak")).decode()
         return UploadedFileDataStructure(
-            key, tweak, self._orignal_filename, self._stored_filename
+            key,
+            tweak,
+            self._orignal_filename,
+            self._stored_filename,
+            self._content_type,
         )

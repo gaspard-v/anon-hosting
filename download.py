@@ -21,9 +21,7 @@ def handle():
     tweak = base64.b64decode(jwt["tweak"])
     stored_filename = jwt["stored_filename"]
     original_filename = jwt["original_filename"]
-    [content_type, _] = mimetypes.guess_type(original_filename, strict=True)
-    if not content_type:
-        content_type = "application/octet-stream"
+    content_type = jwt["content_type"]
     decryptor = EncryptionOperation(key=key, tweak=tweak)
     filepath = utils.get_encrypted_filepath(stored_filename)
     encrypted_file = open(filepath, "rb")
