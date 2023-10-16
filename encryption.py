@@ -195,3 +195,15 @@ class UploadedFileEncryption:
         return UploadedFileDataStructure(
             key, tweak, self._orignal_filename, self._stored_filename
         )
+
+
+class DownloadFileEncryption:
+    def __init__(self, jwt: UploadedFileDataStructure) -> None:
+        self._decryptor = EncryptionOperation(key=jwt.key, tweak=jwt.tweak)
+        self._stored_filepath = get_encrypted_filepath(jwt.stored_filename)
+        if not os.path.exists(self._stored_filepath):
+            # error
+            return
+
+    def get_response_function(self):
+        return self._decryptor.stream_to_stream_decryptor
