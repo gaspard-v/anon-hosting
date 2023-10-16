@@ -67,7 +67,7 @@ class JWEOperation:
         jwetoken.add_recipient(self._key)
         return jwetoken.serialize(compact=True)
 
-    def decode_jwt(self):
+    def decode_jwt(self) -> dict:
         if not isinstance(self._data, (str, bytes)):
             raise ValueError("Data must be an str or bytes")
         jwetoken = jwe.JWE()
@@ -188,16 +188,6 @@ class UploadedFileEncryption:
             encrypted_filepath, "wb"
         ) as encrypted_file, self._file.stream as stream:
             return self._encryptor.stream_to_stream_encryption(stream, encrypted_file)
-        # TODO : implement
-        # functionnal file decryption
-        # with open(encrypted_filepath, "rb") as encrypted_file, open(
-        #     "lol.png", "wb"
-        # ) as lol:
-        #     for decrypted_chunk in self._encryptor.stream_to_stream_decryptor(
-        #         encrypted_file
-        #     ):
-        #         lol.write(decrypted_chunk)
-        # return 1
 
     def generate_json(self) -> UploadedFileDataStructure:
         key = base64.b64encode(self._encryptor.get_key()).decode()
