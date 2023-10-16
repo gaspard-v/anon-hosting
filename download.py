@@ -22,7 +22,7 @@ def handle():
     stored_filename = jwt["stored_filename"]
     original_filename = jwt["original_filename"]
     [content_type, _] = mimetypes.guess_type(original_filename, strict=False)
-    if not type:
+    if not content_type:
         content_type = "application/octet-stream"
     decryptor = EncryptionOperation(key=key, tweak=tweak)
     filepath = utils.get_encrypted_filepath(stored_filename)
