@@ -156,6 +156,7 @@ class EncryptionOperation:
             if not chunk:
                 break
             yield self._decryptor.update(chunk)
+        source_stream.close()
         yield self._decryptor.finalize()
 
     @staticmethod

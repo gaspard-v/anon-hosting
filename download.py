@@ -13,7 +13,10 @@ def handle():
     if not download_key:
         abort(400)
     jwe = JWEOperation(download_key)
-    jwt = jwe.decode_jwt()
+    try:
+        jwt = jwe.decode_jwt()
+    except:
+        abort(400)
     key = base64.b64decode(jwt["key"])
     tweak = base64.b64decode(jwt["tweak"])
     stored_filename = jwt["stored_filename"]
