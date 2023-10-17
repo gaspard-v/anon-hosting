@@ -5,6 +5,7 @@ from Utils.path_operation import get_encrypted_filepath
 from Cryptography.JWT.JWE import JWEOperation
 from Dataclass import UploadedFileDataStructure
 from Cryptography import EncryptionOperation
+from flask_wtf.csrf import validate_csrf, generate_csrf, ValidationError
 
 
 def _get_jwt(download_key: str) -> UploadedFileDataStructure:
@@ -40,7 +41,12 @@ def _decrypt_file_and_generate_response(jwt: UploadedFileDataStructure) -> Respo
 
 def handle():
     if request.method == "GET":
-        return render_template("download.html", **os.environ)
+        csrf_token = generate_csrf()
+        return render_template("download.html", csrf_token=csrf_token, **os.environ)
+    try:
+        validate_csrf(request.form.get("csrf_token"))
+    except ValidationError:
+        abort(400)
     download_key = request.form.get("download key")
     if not download_key:
         abort(400)
