@@ -7,7 +7,7 @@ from Dataclass import UploadedFileDataStructure
 from Cryptography import EncryptionOperation
 
 
-def _get_jwt(download_key) -> UploadedFileDataStructure:
+def _get_jwt(download_key: str) -> UploadedFileDataStructure:
     jwe = JWEOperation(download_key)
     try:
         jwt = jwe.decode_jwt()
@@ -24,9 +24,13 @@ def _decrypt_file_and_generate_response(jwt: UploadedFileDataStructure) -> Respo
         filepath = get_encrypted_filepath(jwt.stored_filename)
     except:
         abort(400)
+    if not os.path.exists(filepath):
+        abort(404)
     encrypted_file = open(filepath, mode="rb")
     return Response(
-        response=decryptor.stream_to_stream_decryptor(encrypted_file),
+        response=decryptor.stream_to_stream_decryptor(
+            encrypted_file, close_stream=True
+        ),
         content_type=jwt.content_type,
         headers={
             "Content-Disposition": f"attachment; filename={jwt.original_filename}"
@@ -40,5 +44,5 @@ def handle():
     download_key = request.form.get("download key")
     if not download_key:
         abort(400)
-    jwt = _get_jwt()
+    jwt = _get_jwt(download_key)
     return _decrypt_file_and_generate_response(jwt)

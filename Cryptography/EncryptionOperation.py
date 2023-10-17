@@ -42,14 +42,19 @@ class EncryptionOperation:
         return total_write
 
     def stream_to_stream_decryptor(
-        self, source_stream: BufferedReader, chunk_size: int = _DEFAULT_CHUNK_SIZE
+        self,
+        source_stream: BufferedReader,
+        chunk_size: int = _DEFAULT_CHUNK_SIZE,
+        *,
+        close_stream=False
     ):
         while True:
             chunk = source_stream.read(chunk_size)
             if not chunk:
                 break
             yield self._decryptor.update(chunk)
-        source_stream.close()
+        if close_stream:
+            source_stream.close()
         yield self._decryptor.finalize()
 
     @staticmethod

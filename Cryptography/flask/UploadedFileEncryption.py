@@ -34,9 +34,9 @@ class UploadedFileEncryption:
         key = base64.b64encode(self._encryptor.get_key()).decode()
         tweak = base64.b64encode(self._encryptor.get_other("tweak")).decode()
         return UploadedFileDataStructure(
-            key,
-            tweak,
-            self._orignal_filename,
-            self._stored_filename,
-            self._content_type,
+            key=key,
+            tweak=tweak,
+            original_filename=self._orignal_filename,
+            stored_filename=self._stored_filename,
+            content_type=self._content_type,
         )
