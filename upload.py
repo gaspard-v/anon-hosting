@@ -1,7 +1,8 @@
 from flask import request, render_template, abort
 import os
 from Exceptions import NoFilesUploaded
-from encryption import UploadedFileEncryption, JWSOperation, JWEOperation
+from Cryptography.flask import UploadedFileEncryption
+from Cryptography.JWT.JWE import JWEOperation
 
 
 def _post_file() -> dict[str, str]:

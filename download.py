@@ -1,8 +1,10 @@
 from flask import Response, request, render_template, abort
-from encryption import JWEOperation, EncryptionOperation, UploadedFileDataStructure
 import os
 import base64
 from Utils.path_operation import get_encrypted_filepath
+from Cryptography.JWT.JWE import JWEOperation
+from Dataclass import UploadedFileDataStructure
+from Cryptography import EncryptionOperation
 
 
 def _get_jwt(download_key) -> UploadedFileDataStructure:

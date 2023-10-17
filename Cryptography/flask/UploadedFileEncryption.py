@@ -1,19 +1,10 @@
-from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from werkzeug.datastructures import FileStorage
 import random
-import string
-import os
-import base64
-from typing import IO, Any
-from io import BufferedWriter, BufferedReader
-import jwt
-from jwcrypto import jwk, jwe
-from jwcrypto.common import json_encode
-from Exceptions import EnvVariableNotDefined
-import time
-import json
-from Dataclass import UploadedFileDataStructure
 from Utils.path_operation import get_encrypted_filepath
+from Dataclass import UploadedFileDataStructure
+from Cryptography import EncryptionOperation
+import string
+import base64
 
 
 class UploadedFileEncryption:
