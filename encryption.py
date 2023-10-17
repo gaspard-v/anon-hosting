@@ -4,7 +4,6 @@ import random
 import string
 import os
 import base64
-from utils import get_encrypted_filepath
 from typing import IO, Any
 from io import BufferedWriter, BufferedReader
 import jwt
@@ -14,6 +13,7 @@ from Exceptions import EnvVariableNotDefined
 import time
 import json
 from Dataclass import UploadedFileDataStructure
+from Utils.path_operation import get_encrypted_filepath
 
 
 class JWEOperation:

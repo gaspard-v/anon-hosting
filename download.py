@@ -2,7 +2,7 @@ from flask import Response, request, render_template, abort
 from encryption import JWEOperation, EncryptionOperation, UploadedFileDataStructure
 import os
 import base64
-import utils
+from Utils.path_operation import get_encrypted_filepath
 
 
 def _get_jwt(download_key) -> UploadedFileDataStructure:
@@ -19,7 +19,7 @@ def _decrypt_file_and_generate_response(jwt: UploadedFileDataStructure) -> Respo
     tweak = base64.b64decode(jwt.tweak)
     decryptor = EncryptionOperation(key=key, tweak=tweak)
     try:
-        filepath = utils.get_encrypted_filepath(jwt.stored_filename)
+        filepath = get_encrypted_filepath(jwt.stored_filename)
     except:
         abort(400)
     encrypted_file = open(filepath, mode="rb")
