@@ -3,7 +3,33 @@ from encryption import JWEOperation, EncryptionOperation, UploadedFileDataStruct
 import os
 import base64
 import utils
-import mimetypes
+
+
+def _get_jwt(download_key) -> UploadedFileDataStructure:
+    jwe = JWEOperation(download_key)
+    try:
+        jwt = jwe.decode_jwt()
+        return UploadedFileDataStructure(**jwt)
+    except:
+        abort(400)
+
+
+def _decrypt_file_and_generate_response(jwt: UploadedFileDataStructure) -> Response:
+    key = base64.b64decode(jwt.key)
+    tweak = base64.b64decode(jwt.tweak)
+    decryptor = EncryptionOperation(key=key, tweak=tweak)
+    try:
+        filepath = utils.get_encrypted_filepath(jwt.stored_filename)
+    except:
+        abort(400)
+    encrypted_file = open(filepath, mode="rb")
+    return Response(
+        response=decryptor.stream_to_stream_decryptor(encrypted_file),
+        content_type=jwt.content_type,
+        headers={
+            "Content-Disposition": f"attachment; filename={jwt.original_filename}"
+        },
+    )
 
 
 def handle():
@@ -12,21 +38,5 @@ def handle():
     download_key = request.form.get("download key")
     if not download_key:
         abort(400)
-    jwe = JWEOperation(download_key)
-    try:
-        jwt = jwe.decode_jwt()
-    except:
-        abort(400)
-    key = base64.b64decode(jwt["key"])
-    tweak = base64.b64decode(jwt["tweak"])
-    stored_filename = jwt["stored_filename"]
-    original_filename = jwt["original_filename"]
-    content_type = jwt["content_type"]
-    decryptor = EncryptionOperation(key=key, tweak=tweak)
-    filepath = utils.get_encrypted_filepath(stored_filename)
-    encrypted_file = open(filepath, "rb")
-    return Response(
-        response=decryptor.stream_to_stream_decryptor(encrypted_file),
-        content_type=content_type,
-        headers={"Content-Disposition": f"attachment; filename={original_filename}"},
-    )
+    jwt = _get_jwt()
+    return _decrypt_file_and_generate_response(jwt)
