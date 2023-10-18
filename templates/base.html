@@ -21,11 +21,13 @@
 </head>
 
 <body>
-    <h1>{% block content_title %}{% endblock %}</h1>
-    {% block content %}{% endblock %}
-    {% if error %}
-    <p id="error">ERROR: {{ error }}</p>
-    {% endif %}
+    <main id="main">
+        <h1 id="content-title">{% block content_title %}{% endblock %}</h1>
+        {% block content %}{% endblock %}
+        {% if error %}
+        <p id="error">ERROR: {{ error }}</p>
+        {% endif %}
+    </main>
 </body>
 
 </html>

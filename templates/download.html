@@ -2,9 +2,9 @@
 {% block title %}{{WEBSITE_NAME}} - Upload{% endblock %}
 {% block content_title %}{{WEBSITE_NAME}} - Upload{% endblock %}
 {% block content %}
-<form method="post">
+<form method="post" id="download-form">
     <input type="text" id="download-key" name="download key" required>
-    <input type="hidden" name="csrf_token" value="{{ csrf_token }}" required>
-    <input type="submit" value="upload">
+    <input type="hidden" id="csrf-token" name="csrf_token" value="{{ csrf_token }}" required>
+    <input id="submit-button" type="submit" value="upload">
 </form>
 {% endblock %}
