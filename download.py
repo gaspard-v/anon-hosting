@@ -3,7 +3,7 @@ import os
 import base64
 from Utils.path_operation import get_encrypted_filepath
 from Cryptography.JWT.JWE import JWEOperation
-from Dataclass import UploadedFileDataStructure, FileMetadata
+from Dataclass import UploadedFileDataStructure
 from Cryptography import EncryptionOperation
 from flask_wtf.csrf import validate_csrf, generate_csrf, ValidationError
 from Cryptography.encrypted_file import get_file_metadata
