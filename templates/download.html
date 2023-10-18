@@ -1,8 +1,13 @@
 {% extends "base.html" %}
-{% block title %}{{WEBSITE_NAME}} - Upload{% endblock %}
-{% block content_title %}{{WEBSITE_NAME}} - Upload{% endblock %}
+{% block title %}{{WEBSITE_NAME}} - Download{% endblock %}
+{% block content_title %}Download{% endblock %}
 {% block content %}
 {% if file_metadata %}
+<ul>
+    <li>file: {{ original_filename }}</li>
+    <li>type: {{ content_type }}</li>
+    <li>size: {{ readable_size }}</li>
+</ul>
 <form method="post" id="download-confirm" name="download_confirm">
     <input type="hidden" id="download-key" name="download_key" value="{{ download_key }}" required>
     <input type="hidden" id="csrf-token" name="csrf_token" value="{{ csrf_token }}" required>

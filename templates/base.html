@@ -21,8 +21,9 @@
 </head>
 
 <body>
+    <h1><a href="{{ url_for('index') }}">{{ WEBSITE_NAME }}</a></h1>
     <main id="main">
-        <h1 id="content-title">{% block content_title %}{% endblock %}</h1>
+        <h2 id="content-title">{% block content_title %}{% endblock %}</h2>
         {% block content %}{% endblock %}
         {% if error %}
         <p id="error">ERROR: {{ error }}</p>

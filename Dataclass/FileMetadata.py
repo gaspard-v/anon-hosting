@@ -5,6 +5,7 @@ from dataclasses import dataclass, fields
 class FileMetadata:
     original_filename: str
     content_type: str
+    readable_size: str
     size: int
 
     def __init__(self, **kwargs):
@@ -17,5 +18,6 @@ class FileMetadata:
         return {
             "original_filename": self.original_filename,
             "content_type": self.content_type,
+            "readable_size": self.readable_size,
             "size": self.size,
         }

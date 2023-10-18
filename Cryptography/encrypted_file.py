@@ -1,6 +1,6 @@
 from Dataclass import UploadedFileDataStructure, FileMetadata
 import os
-from Utils.path_operation import get_encrypted_filepath
+from Utils.path_operation import get_encrypted_filepath, bytes_to_humans_readable
 
 
 def get_file_metadata(jwt: UploadedFileDataStructure) -> FileMetadata:
@@ -9,6 +9,7 @@ def get_file_metadata(jwt: UploadedFileDataStructure) -> FileMetadata:
     metadata = FileMetadata(
         original_filename=jwt.original_filename,
         content_type=jwt.content_type,
+        readable_size=bytes_to_humans_readable(size),
         size=size,
     )
     return metadata
