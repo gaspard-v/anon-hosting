@@ -47,8 +47,18 @@ def handle():
         validate_csrf(request.form.get("csrf_token"))
     except ValidationError:
         abort(400)
-    download_key = request.form.get("download key")
+    download_key = request.form.get("download_key")
     if not download_key:
         abort(400)
     jwt = _get_jwt(download_key)
-    return _decrypt_file_and_generate_response(jwt)
+
+    if request.form.get("download_confirm"):
+        return _decrypt_file_and_generate_response(jwt)
+    csrf_token = generate_csrf()
+    return render_template(
+        "download.html",
+        csrf_token=csrf_token,
+        file_metadata="lol",
+        download_key=download_key,
+        **os.environ,
+    )

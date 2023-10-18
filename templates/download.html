@@ -2,9 +2,18 @@
 {% block title %}{{WEBSITE_NAME}} - Upload{% endblock %}
 {% block content_title %}{{WEBSITE_NAME}} - Upload{% endblock %}
 {% block content %}
-<form method="post" id="download-form">
-    <input type="text" id="download-key" name="download key" required>
+{% if file_metadata %}
+<form method="post" id="download-confirm" name="download_confirm">
+    <input type="hidden" id="download-key" name="download_key" value="{{ download_key }}" required>
     <input type="hidden" id="csrf-token" name="csrf_token" value="{{ csrf_token }}" required>
-    <input id="submit-button" type="submit" value="upload">
+    <input type="hidden" , name="download_confirm" , value="download_confirm" required>
+    <input id="submit-button" type="submit" value="download">
 </form>
+{% else %}
+<form method="post" id="download-form" name="download_form">
+    <input type="text" id="download-key" name="download_key" required>
+    <input type="hidden" id="csrf-token" name="csrf_token" value="{{ csrf_token }}" required>
+    <input id="submit-button" type="submit" value="submit">
+</form>
+{% endif %}
 {% endblock %}
