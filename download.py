@@ -40,6 +40,25 @@ def _decrypt_file_and_generate_response(jwt: UploadedFileDataStructure) -> Respo
     )
 
 
+def _return_metadata(jwt: UploadedFileDataStructure, download_key: str) -> str:
+    csrf_token = generate_csrf()
+    metadata = get_file_metadata(jwt)
+    try:
+        filepath = get_encrypted_filepath(jwt.stored_filename)
+    except:
+        abort(400)
+    if not os.path.exists(filepath):
+        abort(404)
+    return render_template(
+        "download.html",
+        csrf_token=csrf_token,
+        file_metadata=True,
+        download_key=download_key,
+        **metadata.to_dict(),
+        **os.environ,
+    )
+
+
 def handle():
     if request.method == "GET":
         csrf_token = generate_csrf()
@@ -55,13 +74,4 @@ def handle():
 
     if request.form.get("download_confirm"):
         return _decrypt_file_and_generate_response(jwt)
-    csrf_token = generate_csrf()
-    metadata = get_file_metadata(jwt)
-    return render_template(
-        "download.html",
-        csrf_token=csrf_token,
-        file_metadata=True,
-        download_key=download_key,
-        **metadata.to_dict(),
-        **os.environ,
-    )
+    return _return_metadata(jwt, download_key)
