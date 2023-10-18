@@ -1,1 +1,2 @@
 from .UploadedFileDataStructure import UploadedFileDataStructure
+from .FileMetadata import FileMetadata
