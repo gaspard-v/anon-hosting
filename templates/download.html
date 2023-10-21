@@ -8,17 +8,14 @@
     <li>type: {{ content_type }}</li>
     <li>size: {{ readable_size }}</li>
 </ul>
-<form method="post" id="download-confirm" name="download_confirm">
-    <input type="hidden" id="download-key" name="download_key" value="{{ download_key }}" required>
-    <input type="hidden" id="csrf-token" name="csrf_token" value="{{ csrf_token }}" required>
-    <input type="hidden" , name="download_confirm" , value="download_confirm" required>
-    <input id="submit-button" type="submit" value="download">
-</form>
-{% else %}
-<form method="post" id="download-form" name="download_form">
-    <input type="text" id="download-key" name="download_key" required>
-    <input type="hidden" id="csrf-token" name="csrf_token" value="{{ csrf_token }}" required>
-    <input id="submit-button" type="submit" value="submit">
-</form>
 {% endif %}
+<form method="post" id="download-form" name="download_form">
+    <input {% if download_key %} type="hidden" {% endif %} id="download-key" name="download_key"
+        value="{{ download_key }}" required>
+    <input type="hidden" id="csrf-token" name="csrf_token" value="{{ csrf_token }}" required>
+    {% if file_metadata %}
+    <input type="hidden" name="download_confirm" value="download_confirm" required>
+    {% endif %}
+    <input id="submit-button" type="submit" value="{% if file_metadata %}download{% else %}submit{% endif %}">
+</form>
 {% endblock %}
