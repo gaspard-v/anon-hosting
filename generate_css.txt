@@ -1,0 +1,1 @@
+execute "sass static/scss/style.scss static/css/style.css --source-map"
