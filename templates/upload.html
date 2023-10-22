@@ -3,11 +3,14 @@
 {% block content_title %}Upload{% endblock %}
 {% block content %}
 <form class="form-class" method="post" , enctype="multipart/form-data">
-    <input type="file" name="file" required>
+    <label for="file" class="file-upload button">
+        <span>Select a file</span>
+        <input type="file" name="file" id="file" required>
+    </label>
     <input type="hidden" name="csrf_token" value="{{ csrf_token }}" required>
-    <input class="from-class-submit" type="submit" value="upload">
+    <input class="button submit" type="submit" value="upload">
     {% if file_metadata %}
-    <p>{{ file_metadata }}</p>
+    <p>Download key: <span class="break-word" id="download-key">{{ file_metadata }}</span></p>
     {% endif %}
 </form>
 {% endblock %}

@@ -10,13 +10,13 @@
 </ul>
 {% endif %}
 <form class="form-class" method="post" id="download-form" name="download_form">
-    <input {% if download_key %} type="hidden" {% endif %} id="download-key" name="download_key"
-        value="{{ download_key }}" required>
+    <input {% if download_key %} type="hidden" {% endif %} class="break-word" id="download-key" name="download_key"
+        placeholder="Enter the download key" value="{{ download_key }}" required>
     <input type="hidden" id="csrf-token" name="csrf_token" value="{{ csrf_token }}" required>
     {% if file_metadata %}
     <input type="hidden" name="download_confirm" value="download_confirm" required>
     {% endif %}
-    <input class="from-class-submit" id="submit-button" type="submit"
+    <input class="button submit" id="submit-button" type="submit"
         value="{% if file_metadata %}download{% else %}submit{% endif %}">
 </form>
 {% endblock %}
