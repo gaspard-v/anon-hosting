@@ -10,8 +10,8 @@
 </ul>
 {% endif %}
 <form class="form-class" method="post" id="download-form" name="download_form">
-    <input {% if download_key %} type="hidden" {% endif %} class="break-word" id="download-key" name="download_key"
-        placeholder="Enter the download key" value="{{ download_key }}" required>
+    <textarea {% if download_key %} type="hidden" {% endif %} class="break-word" id="download-key" name="download_key"
+        placeholder="Enter the download key" required>{{ download_key }}</textarea>
     <input type="hidden" id="csrf-token" name="csrf_token" value="{{ csrf_token }}" required>
     {% if file_metadata %}
     <input type="hidden" name="download_confirm" value="download_confirm" required>
