@@ -1,6 +1,6 @@
 version: '3'
 services:
-  simple-web-proxy:
+  anon-hosting:
     build:
       context: .
     image: xosh/anon-hosting
