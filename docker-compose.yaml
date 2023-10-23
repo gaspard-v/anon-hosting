@@ -1,0 +1,16 @@
+version: '3'
+services:
+  simple-web-proxy:
+    build:
+      context: .
+    image: xosh/anon-hosting
+    env_file:
+      - .env
+    environment:
+      - GUNICORN_CMD_ARGS=--workers=4 --log-level info
+    ports:
+      - 127.0.0.1:5000:5000
+    volumes:
+      - ./logs:/var/log/gunicorn:rw
+      - ./uploads:/app/uploads:rw
+      - ./private:/app/private:rw

@@ -1,0 +1,10 @@
+__pycache__/
+.venv/
+.vscode/
+private/
+uploads/
+.env
+.env.example
+.git/
+.gitkeep
+*.log
